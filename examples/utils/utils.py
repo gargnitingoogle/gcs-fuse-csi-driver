@@ -28,7 +28,7 @@ def is_mash_installed() -> bool:
 def get_memory(pod_name: str, start: str, end: str) -> Tuple[int, int]:
     # for some reason, the mash filter does not always work, so we fetch all the metrics for all the pods and filter later.
     result = subprocess.run(["mash", "--namespace=cloud_prod", "--output=csv", 
-                             f"Query(Fetch(Raw('cloud.kubernetes.K8sContainer', 'kubernetes.io/container/memory/used_bytes'), {{'project': '641665282868', 'metric:memory_type': 'non-evictable'}})| Window(Align('10m'))| GroupBy(['pod_name', 'container_name'], Max()), TimeInterval('{start}', '{end}'), '5s')"], 
+                             f"Query(Fetch(Raw('cloud.kubernetes.K8sContainer', 'kubernetes.io/container/memory/used_bytes'), {{'project': '927584127901', 'metric:memory_type': 'non-evictable'}})| Window(Align('10m'))| GroupBy(['pod_name', 'container_name'], Max()), TimeInterval('{start}', '{end}'), '5s')"], 
                              capture_output=True, text=True)
 
     data_points_int = []
@@ -51,7 +51,7 @@ def get_memory(pod_name: str, start: str, end: str) -> Tuple[int, int]:
 def get_cpu(pod_name: str, start: str, end: str) -> Tuple[float, float]:
     # for some reason, the mash filter does not always work, so we fetch all the metrics for all the pods and filter later.
     result = subprocess.run(["mash", "--namespace=cloud_prod", "--output=csv", 
-                             f"Query(Fetch(Raw('cloud.kubernetes.K8sContainer', 'kubernetes.io/container/cpu/core_usage_time'), {{'project': '641665282868'}})| Window(Rate('10m'))| GroupBy(['pod_name', 'container_name'], Max()), TimeInterval('{start}', '{end}'), '5s')"], 
+                             f"Query(Fetch(Raw('cloud.kubernetes.K8sContainer', 'kubernetes.io/container/cpu/core_usage_time'), {{'project': '927584127901'}})| Window(Rate('10m'))| GroupBy(['pod_name', 'container_name'], Max()), TimeInterval('{start}', '{end}'), '5s')"], 
                              capture_output=True, text=True)
 
     data_points_float = []
