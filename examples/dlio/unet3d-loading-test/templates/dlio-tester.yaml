@@ -114,6 +114,7 @@ spec:
         fileCacheCapacity: "{{ .Values.gcsfuse.fileCacheCapacity }}"
         fileCacheForRangeRead: "{{ .Values.gcsfuse.fileCacheForRangeRead }}"
         gcsfuseLoggingSeverity: "debug"
+        #mountOptions: "implicit-dirs,file-cache:enable-parallel-downloads:true"
         mountOptions: implicit-dirs
   {{- else }}
     csi:

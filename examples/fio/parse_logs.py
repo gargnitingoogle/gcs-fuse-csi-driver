@@ -79,10 +79,14 @@ if __name__ == "__main__":
             scenario = root_split[-2]
             read_type = root_split[-1]
             epoch = int(file.split(".")[0][-1])
-            
+
             with open(per_epoch_output, 'r') as f:
+              try:
                 per_epoch_output_data = json.load(f)
-            
+              except:
+                print(f"failed to json-parse {per_epoch_output}, so skipping it.")
+                continue
+
             key = "-".join([read_type, mean_file_size])
             if key not in output:
                 output[key] = {
@@ -129,8 +133,22 @@ if __name__ == "__main__":
 
         for scenario in scenario_order:
             for i in range(len(record_set["records"][scenario])):
-                r = record_set["records"][scenario][i]
-                r["throughput_over_local_ssd"] = round(r["throughput_mb_per_second"] / record_set["records"]["local-ssd"][i]["throughput_mb_per_second"] * 100, 2)
-                output_file.write(f"{record_set['mean_file_size']},{record_set['read_type']},{scenario},{r['epoch']},{r['duration']},{r['throughput_mb_per_second']},{r['IOPS']},{r['throughput_over_local_ssd']},{r['lowest_memory']},{r['highest_memory']},{r['lowest_cpu']},{r['highest_cpu']},{r['pod_name']},{r['start']},{r['end']}\n")
-
+              if ("local-ssd" in record_set["records"]) and (len(record_set["records"]["local-ssd"]) == len(record_set["records"][scenario])):
+                try:
+                  r = record_set["records"][scenario][i]
+                  r["throughput_over_local_ssd"] = round(r["throughput_mb_per_second"] / record_set["records"]["local-ssd"][i]["throughput_mb_per_second"] * 100, 2)
+                except:
+                  print(f"failed to parse record-set for throughput_over_local_ssd. record: {r}")
+                  continue
+                else:
+                  output_file.write(f"{record_set['mean_file_size']},{record_set['read_type']},{scenario},{r['epoch']},{r['duration']},{r['throughput_mb_per_second']},{r['IOPS']},{r['throughput_over_local_ssd']},{r['lowest_memory']},{r['highest_memory']},{r['lowest_cpu']},{r['highest_cpu']},{r['pod_name']},{r['start']},{r['end']}\n")
+              else:
+                try:
+                  r = record_set["records"][scenario][i]
+                  r["throughput_over_local_ssd"] ='NA'
+                except:
+                  print(f"failed to parse record-set for throughput_over_local_ssd. record: {r}")
+                  continue
+                else:
+                  output_file.write(f"{record_set['mean_file_size']},{record_set['read_type']},{scenario},{r['epoch']},{r['duration']},{r['throughput_mb_per_second']},{r['IOPS']},{r['throughput_over_local_ssd']},{r['lowest_memory']},{r['highest_memory']},{r['lowest_cpu']},{r['highest_cpu']},{r['pod_name']},{r['start']},{r['end']}\n")
     output_file.close()
